@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindPets - Найди своего питомца</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #F7931E;
+            --accent-color: #FFA726;
+            --light-color: #FFF3E0;
+            --dark-color: #2E2E2E;
+            --success-color: #4CAF50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+        }
+        
+        .pet-card-img {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .active-page {
+            display: block;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(76, 201, 240, 0.25);
+        }
+        
+        .carousel-item {
+            height: 400px;
+        }
+        
+        .carousel-item img {
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .badge-status {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+        
+        .badge-active {
+            background-color: var(--success-color);
+        }
+        
+        .badge-moderation {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .badge-archive {
+            background-color: #6c757d;
+        }
+        
+        .badge-found {
+            background-color: var(--accent-color);
+        }
+        
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .search-suggestion-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        
+        .search-suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .pagination .page-link {
+            color: var(--primary-color);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Стили для валидации */
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+        
+        .invalid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
+        
+        .form-control.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+        
+        .form-check-input.is-invalid ~ .form-check-label {
+            color: #dc3545;
+        }
+        
+        .form-check-input.is-invalid {
+            border-color: #dc3545;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        /* Анимация для кнопок */
+        .btn-animated {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-animated:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="showPage('home')">
+                <i class="bi bi-house-heart-fill me-2"></i>FindPets
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('search')">Поиск животных</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('add-pet')">Добавить объявление</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div class="input-group me-2">
+                        <input type="text" class="form-control" placeholder="Поиск..." id="quick-search">
+                        <button class="btn btn-outline-primary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Аккаунт
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showPage('login')">Вход</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('registration')">Регистрация</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('profile')">Личный кабинет</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главная страница -->
+    <div id="home" class="page active-page fade-in">
+        <!-- Слайдер с успешными историями -->
+        <br>
+        <section class="container mb-5">
+            <h2 class="section-title">Успешные воссоединения</h2>
+            <div id="successStoriesCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#successStoriesCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#successStoriesCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#successStoriesCarousel" data-bs-slide-to="2"></button>
+                </div>
+                <div class="carousel-inner rounded-3">
+                    <div class="carousel-item active">
+                        <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                        <img src="img/pets/мурка.jpg" class="d-block w-100" alt="Cat reunion">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                            <h5>Мурка вернулась домой</h5>
+                            <p>После 2 недель поисков кошка Мурка была найдена и вернулась к своей семье.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                        <img src="img/pets/бадди.jpg" class="d-block w-100" alt="Dog reunion">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                            <h5>Бадди снова с хозяином</h5>
+                            <p>Собака породы лабрадор была найдена через 5 дней после пропажи.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                        <img src="img/pets/симба.jpg" class="d-block w-100" alt="Cat reunion 2">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                            <h5>Симба нашел новый дом</h5>
+                            <p>Котенок был найден на улице и теперь обрел любящую семью.</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#successStoriesCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#successStoriesCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Карточки недавно найденных животных -->
+        <section class="container mb-5">
+            <h2 class="section-title">Недавно найденные животные</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                        <img src="img/pets/пес_рыжий.jpg" class="card-img-top pet-card-img" alt="Found dog">
+                        <div class="card-body">
+                            <h5 class="card-title">Пес Майк</h5>
+                            <p class="card-text">Найден в Центральном районе. Рыжего окраса, среднего размера, очень дружелюбный.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Найден: 15.06.2025</small>
+                                <span class="badge bg-primary">Собака</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                        <img src="img/pets/кошка_серая.jpg" class="card-img-top pet-card-img" alt="Found cat">
+                        <div class="card-body">
+                            <h5 class="card-title">Кошка Митиса</h5>
+                            <p class="card-text">Найдена в Василеостровском районе. Пушистая, серая с белым, приучена к лотку.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Найдена: 12.06.2025</small>
+                                <span class="badge bg-primary">Кошка</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                        <img src="img/pets/попугай.jpg" class="card-img-top pet-card-img" alt="Found parrot">
+                        <div class="card-body">
+                            <h5 class="card-title">Попугай Филл</h5>
+                            <p class="card-text">Найден в Адмиралтейском районе. Волнистый попугай голубого окраса, умеет говорить несколько слов.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Найден: 10.06.2025</small>
+                                <span class="badge bg-primary">Птица</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-primary btn-animated" onclick="showPage('search')">Смотреть все объявления</button>
+            </div>
+        </section>
+
+        <!-- Подписка на новости -->
+        <section class="container mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card bg-light">
+                        <div class="card-body p-4 text-center">
+                            <h3 class="card-title">Подпишитесь на новости</h3>
+                            <p class="card-text">Получайте уведомления о новых найденных животных в вашем районе</p>
+                            <form class="row g-2 justify-content-center" id="subscription-form">
+                                <div class="col-md-8">
+                                    <input type="email" class="form-control" id="subscription-email" placeholder="Ваш email" required>
+                                    <div class="invalid-feedback">Пожалуйста, введите корректный email</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary w-100 btn-animated">Подписаться</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Страница поиска животных -->
+    <div id="search" class="page fade-in">
+        <div class="container my-5">
+            <h2 class="section-title">Поиск животных</h2>
+            
+            <!-- Форма поиска -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="search-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="district" class="form-label">Район</label>
+                                <select class="form-select" id="district">
+                                    <option value="">Все районы</option>
+                                    <option value="Адмиралтейский">Адмиралтейский</option>
+                                    <option value="Василеостровский">Василеостровский</option>
+                                    <option value="Выборгский">Выборгский</option>
+                                    <option value="Калининский">Калининский</option>
+                                    <option value="Кировский">Кировский</option>
+                                    <option value="Колпинский">Колпинский</option>
+                                    <option value="Красногвардейский">Красногвардейский</option>
+                                    <option value="Красносельский">Красносельский</option>
+                                    <option value="Кронштадтский">Кронштадтский</option>
+                                    <option value="Курортный">Курортный</option>
+                                    <option value="Московский">Московский</option>
+                                    <option value="Невский">Невский</option>
+                                    <option value="Петроградский">Петроградский</option>
+                                    <option value="Петродворцовый">Петродворцовый</option>
+                                    <option value="Приморский">Приморский</option>
+                                    <option value="Пушкинский">Пушкинский</option>
+                                    <option value="Фрунзенский">Фрунзенский</option>
+                                    <option value="Центральный">Центральный</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="kind" class="form-label">Вид животного</label>
+                                <input type="text" class="form-control" id="kind" placeholder="Например: кошка, собака">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-animated">
+                                    <i class="bi bi-search me-2"></i>Найти
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Блок с состоянием поиска -->
+            <div id="search-state">
+                <!-- Изначально показываем приветственное сообщение -->
+                <div class="text-center py-5" id="initial-state">
+                    <div class="mb-4">
+                        <i class="bi bi-search display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Начните поиск животных</h4>
+                    <p class="text-muted">Выберите район и/или укажите вид животного, чтобы увидеть результаты</p>
+                </div>
+
+                <!-- Результаты поиска (изначально скрыты) -->
+                <div id="search-results-container" style="display: none;">
+                    <h3 class="mb-3">Результаты поиска</h3>
+                    <div class="row g-4" id="search-results">
+                        <!-- Результаты будут загружены здесь -->
+                    </div>
+
+                    <!-- Пагинация -->
+                    <nav class="mt-5" id="pagination-container">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- Пагинация будет генерироваться здесь -->
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Сообщение "Ничего не найдено" (изначально скрыто) -->
+                <div class="text-center py-5" id="no-results-state" style="display: none;">
+                    <div class="mb-4">
+                        <i class="bi bi-search display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Ничего не найдено</h4>
+                    <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                    <button class="btn btn-outline-primary mt-3" onclick="resetSearch()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Сбросить фильтры
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница добавления объявления -->
+    <div id="add-pet" class="page fade-in">
+        <div class="container my-5">
+            <h2 class="section-title">Добавить объявление о найденном животном</h2>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <form id="add-pet-form">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="pet-name" class="form-label">Ваше имя *</label>
+                                        <input type="text" class="form-control" id="pet-name" required pattern="[А-Яа-я\s\-]+">
+                                        <div class="invalid-feedback">Имя должно содержать только кириллицу, пробелы и дефисы</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="pet-phone" class="form-label">Телефон *</label>
+                                        <input type="tel" class="form-control" id="pet-phone" required pattern="[\+\d]+">
+                                        <div class="invalid-feedback">Телефон должен содержать только цифры и знак +</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="pet-email" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="pet-email" required>
+                                        <div class="invalid-feedback">Пожалуйста, введите корректный email</div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="register-toggle">
+                                            <label class="form-check-label" for="register-toggle">Зарегистрироваться на сайте</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12" id="password-fields" style="display: none;">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="pet-password" class="form-label">Пароль *</label>
+                                                <input type="password" class="form-control" id="pet-password" minlength="7" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,}$">
+                                                <div class="invalid-feedback">Пароль должен содержать минимум 7 символов, включая 1 цифру, 1 строчную и 1 заглавную букву</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="pet-password-confirm" class="form-label">Подтверждение пароля *</label>
+                                                <input type="password" class="form-control" id="pet-password-confirm">
+                                                <div class="invalid-feedback">Пароли не совпадают</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="pet-kind" class="form-label">Вид животного *</label>
+                                        <select class="form-select" id="pet-kind" required>
+                                            <option value="">Выберите вид</option>
+                                            <option value="Собака">Собака</option>
+                                            <option value="Кошка">Кошка</option>
+                                            <option value="Птица">Птица</option>
+                                            <option value="Грызун">Грызун</option>
+                                            <option value="Рептилия">Рептилия</option>
+                                            <option value="Другое">Другое</option>
+                                        </select>
+                                        <div class="invalid-feedback">Пожалуйста, выберите вид животного</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="pet-district" class="form-label">Район, где найдено животное *</label>
+                                        <select class="form-select" id="pet-district" required>
+                                            <option value="">Выберите район</option>
+                                            <option value="Адмиралтейский">Адмиралтейский</option>
+                                            <option value="Василеостровский">Василеостровский</option>
+                                            <option value="Выборгский">Выборгский</option>
+                                            <option value="Калининский">Калининский</option>
+                                            <option value="Кировский">Кировский</option>
+                                            <option value="Колпинский">Колпинский</option>
+                                            <option value="Красногвардейский">Красногвардейский</option>
+                                            <option value="Красносельский">Красносельский</option>
+                                            <option value="Кронштадтский">Кронштадтский</option>
+                                            <option value="Курортный">Курортный</option>
+                                            <option value="Московский">Московский</option>
+                                            <option value="Невский">Невский</option>
+                                            <option value="Петроградский">Петроградский</option>
+                                            <option value="Петродворцовый">Петродворцовый</option>
+                                            <option value="Приморский">Приморский</option>
+                                            <option value="Пушкинский">Пушкинский</option>
+                                            <option value="Фрунзенский">Фрунзенский</option>
+                                            <option value="Центральный">Центральный</option>
+                                        </select>
+                                        <div class="invalid-feedback">Пожалуйста, выберите район</div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="pet-mark" class="form-label">Клеймо/Чип (если есть)</label>
+                                        <input type="text" class="form-control" id="pet-mark">
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="pet-description" class="form-label">Описание *</label>
+                                        <textarea class="form-control" id="pet-description" rows="4" required placeholder="Опишите животное: порода, окрас, особые приметы, поведение и т.д."></textarea>
+                                        <div class="invalid-feedback">Пожалуйста, заполните описание</div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label class="form-label">Фотографии *</label>
+                                        <div class="mb-3">
+                                            <input class="form-control" type="file" id="pet-photo1" accept="image/png" required>
+                                            <div class="form-text">Основное фото (обязательно)</div>
+                                            <div class="invalid-feedback">Пожалуйста, загрузите основное фото</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input class="form-control" type="file" id="pet-photo2" accept="image/png">
+                                            <div class="form-text">Дополнительное фото</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input class="form-control" type="file" id="pet-photo3" accept="image/png">
+                                            <div class="form-text">Дополнительное фото</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="pet-confirm" required>
+                                            <label class="form-check-label" for="pet-confirm">
+                                                Я согласен на обработку персональных данных *
+                                            </label>
+                                            <div class="invalid-feedback">Необходимо согласие на обработку персональных данных</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary btn-lg w-100 btn-animated">Добавить объявление</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница входа -->
+    <div id="login" class="page fade-in">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h2 class="text-center mb-4">Вход в личный кабинет</h2>
+                            <form id="login-form">
+                                <div class="mb-3">
+                                    <label for="login-email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="login-email" required>
+                                    <div class="invalid-feedback">Пожалуйста, введите корректный email</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="login-password" class="form-label">Пароль *</label>
+                                    <input type="password" class="form-control" id="login-password" required>
+                                    <div class="invalid-feedback">Пожалуйста, введите пароль</div>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="login-remember">
+                                    <label class="form-check-label" for="login-remember">Запомнить меня</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mb-3 btn-animated">Войти</button>
+                                <div class="text-center">
+                                    <!-- ИСПРАВЛЕНО: Удален некорректный атрибут primary-color -->
+                                    <a href="#" onclick="showPage('registration')">Нет аккаунта? Зарегистрируйтесь</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница регистрации -->
+    <div id="registration" class="page fade-in">
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h2 class="text-center mb-4">Регистрация</h2>
+                            <form id="registration-form">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="reg-name" class="form-label">Имя *</label>
+                                        <input type="text" class="form-control" id="reg-name" required pattern="[А-Яа-я\s\-]+">
+                                        <div class="invalid-feedback">Имя должно содержать только кириллицу, пробелы и дефисы</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="reg-phone" class="form-label">Телефон *</label>
+                                        <input type="tel" class="form-control" id="reg-phone" required pattern="[\+\d]+">
+                                        <div class="invalid-feedback">Телефон должен содержать только цифры и знак +</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="reg-email" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="reg-email" required>
+                                        <div class="invalid-feedback">Пожалуйста, введите корректный email</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="reg-password" class="form-label">Пароль *</label>
+                                        <input type="password" class="form-control" id="reg-password" required minlength="7" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,}$">
+                                        <div class="invalid-feedback">Пароль должен содержать минимум 7 символов, включая 1 цифру, 1 строчную и 1 заглавную букву</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="reg-password-confirm" class="form-label">Подтверждение пароля *</label>
+                                        <input type="password" class="form-control" id="reg-password-confirm" required>
+                                        <div class="invalid-feedback">Пароли не совпадают</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="reg-confirm" required>
+                                            <label class="form-check-label" for="reg-confirm">
+                                                Я согласен на обработку персональных данных *
+                                            </label>
+                                            <div class="invalid-feedback">Необходимо согласие на обработку персональных данных</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary w-100 btn-animated">Зарегистрироваться</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница личного кабинета -->
+    <div id="profile" class="page fade-in">
+        <div class="container my-5">
+            <h2 class="section-title">Личный кабинет</h2>
+            
+            <div class="row">
+                <!-- Информация о пользователе -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" class="user-avatar mb-3" alt="Аватар пользователя">
+                            <h4>Иван Иванов</h4>
+                            <p class="text-muted">Зарегистрирован: 15.03.2022</p>
+                            <div class="row text-center mt-3">
+                                <div class="col-6">
+                                    <div class="stats-card rounded-3 p-2 mb-2">
+                                        <h5>4</h5>
+                                        <small>Объявления</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stats-card rounded-3 p-2 mb-2">
+                                        <h5>2</h5>
+                                        <small>Найдены хозяева</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm mt-3 btn-animated" onclick="logout()">
+                                <i class="bi bi-box-arrow-right me-1"></i>Выйти
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Форма изменения телефона -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Изменить телефон</h5>
+                            <form id="phone-form">
+                                <div class="mb-3">
+                                    <input type="tel" class="form-control" id="profile-phone" value="+79111234567" required pattern="[\+\d]+">
+                                    <div class="invalid-feedback">Телефон должен содержать только цифры и знак +</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 btn-animated">Сохранить</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Форма изменения email -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Изменить email</h5>
+                            <form id="email-form">
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" id="profile-email" value="user@user.ru" required>
+                                    <div class="invalid-feedback">Пожалуйста, введите корректный email</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 btn-animated">Сохранить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Объявления пользователя -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Мои объявления</h5>
+                            
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6>Найдена кошка, порода Сфинкс</h6>
+                                        <small class="text-muted">Район: Василеостровский | Дата: 01-06-2025</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-status badge-moderation">На модерации</span>
+                                        <div class="btn-group btn-group-sm ms-2">
+                                            <button class="btn btn-outline-primary btn-animated" onclick="editOrder(1)">Редактировать</button>
+                                            <button class="btn btn-outline-danger btn-animated" onclick="deleteOrder(1)">Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6>Найдена собака, порода Лабрадор</h6>
+                                        <small class="text-muted">Район: Центральный | Дата: 15-05-2025</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-status badge-active">Активное</span>
+                                        <div class="btn-group btn-group-sm ms-2">
+                                            <button class="btn btn-outline-primary btn-animated" onclick="editOrder(2)">Редактировать</button>
+                                            <button class="btn btn-outline-danger btn-animated" onclick="deleteOrder(2)">Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6>Найден попугай, волнистый</h6>
+                                        <small class="text-muted">Район: Адмиралтейский | Дата: 10-04-2025</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-status badge-found">Хозяин найден</span>
+                                        <div class="btn-group btn-group-sm ms-2">
+                                            <button class="btn btn-outline-secondary" disabled>Редактировать</button>
+                                            <button class="btn btn-outline-secondary" disabled>Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6>Найдена кошка, рыжая</h6>
+                                        <small class="text-muted">Район: Фрунзенский | Дата: 22-03-2025</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-status badge-archive">В архиве</span>
+                                        <div class="btn-group btn-group-sm ms-2">
+                                            <button class="btn btn-outline-secondary" disabled>Редактировать</button>
+                                            <button class="btn btn-outline-secondary" disabled>Удалить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница карточки животного -->
+    <div id="pet-card" class="page fade-in">
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Фотографии животного -->
+                    <div id="petCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#petCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#petCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#petCarousel" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner rounded-3">
+                            <div class="carousel-item active">
+                                <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                                <img src="img/pets/сфинкс1.jpg" class="d-block w-100" alt="Кошка фото 1" style="height: 400px; object-fit: cover;">
+                            </div>
+                            <div class="carousel-item">
+                                <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                                <img src="img/pets/сфинкс2.jpg" class="d-block w-100" alt="Кошка фото 2" style="height: 400px; object-fit: cover;">
+                            </div>
+                            <div class="carousel-item">
+                                <!-- ИСПРАВЛЕНО: Заменены пути с обратными слешами на прямые -->
+                                <img src="img/pets/сфинкс3.jpg" class="d-block w-100" alt="Кошка фото 3" style="height: 400px; object-fit: cover;">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#petCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#petCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                    
+                    <!-- Описание животного -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Найдена кошка, порода Сфинкс</h3>
+                            <p class="card-text">Найдена кошка, порода Сфинкс, очень грустная. Найдена в Василеостровском районе, недалеко от метро. Кошка без ошейника, но с клеймом VL-0214. Очень ласковая, приучена к лотку. Ищет хозяев или временную передержку.</p>
+                            
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h5>Информация о животном</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Вид:</span>
+                                            <span>Кошка</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Порода:</span>
+                                            <span>Сфинкс</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Клеймо/Чип:</span>
+                                            <span>VL-0214</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Район:</span>
+                                            <span>Василеостровский</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Дата находки:</span>
+                                            <span>01-06-2025</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Контактная информация</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Имя:</span>
+                                            <span>Иван</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Телефон:</span>
+                                            <span>+79112345678</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Email:</span>
+                                            <span>user@user.ru</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Статус объявления:</span>
+                                            <span class="badge badge-moderation">На модерации</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Боковая панель -->
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Это ваш питомец?</h5>
+                            <p class="card-text">Свяжитесь с нашедшим для подтверждения и получения дополнительной информации</p>
+                            <button class="btn btn-primary w-100 mb-2 btn-animated">
+                                <i class="bi bi-telephone me-2"></i>Позвонить
+                            </button>
+                            <button class="btn btn-outline-primary w-100 btn-animated">
+                                <i class="bi bi-envelope me-2"></i>Написать email
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Похожие объявления</h5>
+                            <div class="list-group list-group-flush">
+                                <a href="#" class="list-group-item list-group-item-action" onclick="showPage('pet-card')">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Найдена кошка, серая</h6>
+                                        <small>2 дня назад</small>
+                                    </div>
+                                    <p class="mb-1">Район: Центральный</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action" onclick="showPage('pet-card')">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Найдена кошка, пушистая</h6>
+                                        <small>5 дней назад</small>
+                                    </div>
+                                    <p class="mb-1">Район: Фрунзенский</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action" onclick="showPage('pet-card')">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Найден кот, рыжий</h6>
+                                        <small>1 неделю назад</small>
+                                    </div>
+                                    <p class="mb-1">Район: Адмиралтейский</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>FindPets</h5>
+                    <p>Сервис для поиска потерянных домашних животных</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Навигация</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white text-decoration-none" onclick="showPage('home')">Главная</a></li>
+                        <li><a href="#" class="text-white text-decoration-none" onclick="showPage('search')">Поиск животных</a></li>
+                        <!-- ИСПРАВЛЕНО: Исправлена опечатка в CSS-классе -->
+                        <li><a href="#" class="text-white text-decoration-none" onclick="showPage('add-pet')">Добавить объявление</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Контакты</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-envelope me-2"></i>info@findpets.ru</li>
+                        <li><i class="bi bi-telephone me-2"></i>+7 (911) 123-45-67</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center">
+                <p>&copy; 2025 FindPets. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Мок-данные для животных
+        const mockPets = [
+            { id: 1, kind: 'Собака', district: 'Центральный', description: 'Найдена собака, рыжего окраса, среднего размера, очень дружелюбный.', date: '15.06.2025', image: 'https://i.postimg.cc/Hkkmpdh8/pes-ryzij.jpg' },
+            { id: 2, kind: 'Кошка', district: 'Василеостровский', description: 'Найдена кошка, пушистая, серая с белым, приучена к лотку.', date: '12.06.2025', image: 'https://i.postimg.cc/vHWT1YhK/koska-seraa.jpg' },
+            { id: 3, kind: 'Птица', district: 'Адмиралтейский', description: 'Найден попугай, волнистый попугай голубого окраса, умеет говорить несколько слов.', date: '10.06.2025', image: 'https://i.postimg.cc/L527NVdk/popugaj.jpg' },
+            { id: 4, kind: 'Кошка', district: 'Фрунзенский', description: 'Найдена кошка, рыжая, очень ласковая, приучена к лотку.', date: '08.06.2025', image: 'https://i.postimg.cc/Bv2Mk1BH/koska-ryzaa.jpg' },
+            { id: 5, kind: 'Собака', district: 'Приморский', description: 'Найдена собака, породы лабрадор, черного окраса, очень дружелюбная.', date: '05.06.2025', image: 'https://i.postimg.cc/KzZrWpY6/labrador.jpg' },
+            { id: 6, kind: 'Кошка', district: 'Центральный', description: 'Найдена кошка, породы сфинкс, без шерсти, очень ласковая.', date: '01.06.2025', image: 'https://i.postimg.cc/ydYcjJQ4/sfinks1.jpg' },
+            { id: 7, kind: 'Собака', district: 'Василеостровский', description: 'Найдена собака, маленькая, белого окраса, очень активная.', date: '28.05.2025', image: 'https://i.postimg.cc/RVfdNH28/sobaka-belaa.jpg' },
+            { id: 8, kind: 'Кошка', district: 'Адмиралтейский', description: 'Найдена кошка, трехцветная, очень пушистая, приучена к лотку.', date: '25.05.2025', image: 'https://i.postimg.cc/632RFsKN/koska-trehcvetnaa.jpg' },
+            { id: 9, kind: 'Птица', district: 'Центральный', description: 'Найдены попугаи, желтого окраса, очень громкие.', date: '22.05.2025', image: 'https://i.postimg.cc/FsZfWFSj/popugai-zeltye.jpg' },
+            { id: 10, kind: 'Собака', district: 'Фрунзенский', description: 'Найдена собака, среднего размера, коричневого окраса, очень умная.', date: '20.05.2025', image: 'https://i.postimg.cc/763P5XMm/sobaka-koricnevaa.jpg' },
+            { id: 11, kind: 'Грызун', district: 'Приморский', description: 'Найдена белка, коричневого окраса, очень игривая.', date: '18.05.2025', image: 'https://i.postimg.cc/V6GGWPFD/belka.jpg' },
+            { id: 12, kind: 'Другое', district: 'Центральный', description: 'Найдена коза, небольшая, белого окраса, очень пугливая.', date: '15.05.2025', image: 'https://i.postimg.cc/LhdVx9ZS/koza.jpg' }
+        ];
+    
+        // Переменные для пагинации
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        let currentFilteredPets = [];
+    
+        // Функция для переключения страниц
+        function showPage(pageId) {
+            // Скрыть все страницы
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active-page');
+            });
+            
+            // Показать выбранную страницу
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // Если показываем страницу поиска, сбрасываем состояние
+            if (pageId === 'search') {
+                resetSearch();
+            }
+            
+            // Прокрутить к верху страницы
+            window.scrollTo(0, 0);
+        }
+        
+        // Функция для отображения результатов поиска
+        function displaySearchResults(pets, page) {
+            const resultsContainer = document.getElementById('search-results');
+            const initialState = document.getElementById('initial-state');
+            const resultsContainerElement = document.getElementById('search-results-container');
+            const noResultsState = document.getElementById('no-results-state');
+            
+            resultsContainer.innerHTML = '';
+            
+            // Вычисляем индексы для текущей страницы
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedPets = pets.slice(startIndex, endIndex);
+            
+            // Показываем/скрываем соответствующие блоки
+            if (pets.length === 0) {
+                // Нет результатов
+                initialState.style.display = 'none';
+                resultsContainerElement.style.display = 'none';
+                noResultsState.style.display = 'block';
+                return;
+            } else {
+                // Есть результаты
+                initialState.style.display = 'none';
+                noResultsState.style.display = 'none';
+                resultsContainerElement.style.display = 'block';
+            }
+            
+            // Создаем карточки для каждого животного
+            paginatedPets.forEach(pet => {
+                const petCard = `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <img src="${pet.image}" class="card-img-top pet-card-img" alt="${pet.kind}">
+                            <div class="card-body">
+                                <h5 class="card-title">${pet.kind}</h5>
+                                <p class="card-text">${pet.description}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Найден: ${pet.date}</small>
+                                    <span class="badge bg-primary">${pet.kind}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-outline-primary btn-sm w-100 btn-animated" onclick="showPage('pet-card')">Подробнее</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                resultsContainer.innerHTML += petCard;
+            });
+        }
+        
+        // Функция для отображения пагинации
+        function displayPagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            
+            // Кнопка "Предыдущая"
+            const prevButton = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Предыдущая</a>
+                </li>
+            `;
+            paginationContainer.innerHTML += prevButton;
+            
+            // Кнопки с номерами страниц
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>
+                `;
+                paginationContainer.innerHTML += pageButton;
+            }
+            
+            // Кнопка "Следующая"
+            const nextButton = `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Следующая</a>
+                </li>
+            `;
+            paginationContainer.innerHTML += nextButton;
+        }
+        
+        // Функция для изменения страницы
+        function changePage(page) {
+            currentPage = page;
+            displaySearchResults(currentFilteredPets, page);
+            displayPagination(currentFilteredPets.length);
+        }
+        
+        // Функция сброса поиска
+        function resetSearch() {
+            document.getElementById('district').value = '';
+            document.getElementById('kind').value = '';
+            
+            // Показываем начальное состояние
+            document.getElementById('initial-state').style.display = 'block';
+            document.getElementById('search-results-container').style.display = 'none';
+            document.getElementById('no-results-state').style.display = 'none';
+            
+            // Сбрасываем текущие отфильтрованные данные
+            currentFilteredPets = [];
+        }
+        
+        // Обработка формы поиска
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const district = document.getElementById('district').value;
+            const kind = document.getElementById('kind').value;
+            
+            // Фильтрация результатов
+            let filteredPets = mockPets;
+            
+            if (district) {
+                filteredPets = filteredPets.filter(pet => pet.district === district);
+            }
+            
+            if (kind) {
+                filteredPets = filteredPets.filter(pet => 
+                    pet.kind.toLowerCase().includes(kind.toLowerCase()) || 
+                    pet.description.toLowerCase().includes(kind.toLowerCase())
+                );
+            }
+            
+            // Сохраняем отфильтрованные данные для пагинации
+            currentFilteredPets = filteredPets;
+            
+            // Отображение результатов
+            currentPage = 1;
+            displaySearchResults(filteredPets, currentPage);
+            displayPagination(filteredPets.length);
+        });
+        
+        // Функция для валидации формы
+        function validateForm(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input, select, textarea');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                // Проверяем только обязательные поля
+                if (input.hasAttribute('required')) {
+                    // Проверка для чекбоксов
+                    if (input.type === 'checkbox') {
+                        if (!input.checked) {
+                            input.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    } 
+                    // Проверка для полей с паттерном
+                    else if (input.hasAttribute('pattern')) {
+                        const pattern = new RegExp(input.getAttribute('pattern'));
+                        if (!pattern.test(input.value)) {
+                            input.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    }
+                    // Проверка для обычных полей
+                    else if (!input.value.trim()) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                    
+                    // Специальная проверка для подтверждения пароля
+                    if (input.id === 'reg-password-confirm' || input.id === 'pet-password-confirm') {
+                        const passwordField = input.id === 'reg-password-confirm' 
+                            ? document.getElementById('reg-password') 
+                            : document.getElementById('pet-password');
+                        
+                        if (passwordField && input.value !== passwordField.value) {
+                            input.classList.add('is-invalid');
+                            isValid = false;
+                        }
+                    }
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Обработка формы регистрации
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('registration-form')) {
+                // В реальном приложении здесь будет отправка данных на сервер
+                alert('Регистрация прошла успешно!');
+                showPage('login');
+            }
+        });
+        
+        // Обработка формы входа
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('login-form')) {
+                // В реальном приложении здесь будет отправка данных на сервер
+                alert('Вход выполнен успешно!');
+                showPage('profile');
+            }
+        });
+        
+        // Обработка формы добавления объявления
+        document.getElementById('add-pet-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('add-pet-form')) {
+                // В реальном приложении здесь будет отправка данных на сервер
+                alert('Объявление успешно добавлено и отправлено на модерацию!');
+                showPage('home');
+            }
+        });
+        
+        // Обработка формы подписки
+        document.getElementById('subscription-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('subscription-email');
+            if (emailInput.value && emailInput.checkValidity()) {
+                alert('Вы успешно подписались на новости!');
+                emailInput.value = '';
+            } else {
+                emailInput.classList.add('is-invalid');
+            }
+        });
+        
+        // Показать/скрыть поля пароля при добавлении объявления
+        document.getElementById('register-toggle').addEventListener('change', function() {
+            const passwordFields = document.getElementById('password-fields');
+            if (this.checked) {
+                passwordFields.style.display = 'block';
+            } else {
+                passwordFields.style.display = 'none';
+            }
+        });
+        
+        // Обработка формы изменения телефона
+        document.getElementById('phone-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('phone-form')) {
+                alert('Телефон успешно изменен!');
+            }
+        });
+        
+        // Обработка формы изменения email
+        document.getElementById('email-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('email-form')) {
+                alert('Email успешно изменен!');
+            }
+        });
+        
+        // Функция выхода из аккаунта
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                showPage('home');
+            }
+        }
+        
+        // Функция удаления объявления
+        function deleteOrder(id) {
+            if (confirm('Вы уверены, что хотите удалить это объявление?')) {
+                alert('Объявление успешно удалено!');
+                // В реальном приложении здесь будет запрос к API
+            }
+        }
+        
+        // Функция редактирования объявления
+        function editOrder(id) {
+            alert('Редактирование объявления с ID: ' + id);
+            // В реальном приложении здесь будет переход на страницу редактирования
+        }
+        
+        // Быстрый поиск с debounce
+        let searchTimeout;
+        document.getElementById('quick-search').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                // В реальном приложении здесь будет запрос к API
+                console.log('Поиск:', this.value);
+            }, 1000);
+        });
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Показать главную страницу по умолчанию
+            showPage('home');
+            
+            // Добавляем обработчики для валидации при потере фокуса
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.hasAttribute('required') && !this.value.trim()) {
+                        this.classList.add('is-invalid');
+                    } else if (this.hasAttribute('pattern')) {
+                        const pattern = new RegExp(this.getAttribute('pattern'));
+                        if (!pattern.test(this.value)) {
+                            this.classList.add('is-invalid');
+                        } else {
+                            this.classList.remove('is-invalid');
+                        }
+                    } else {
+                        this.classList.remove('is-invalid');
+                    }
+                    
+                    // Специальная проверка для подтверждения пароля
+                    if (this.id === 'reg-password-confirm' || this.id === 'pet-password-confirm') {
+                        const passwordField = this.id === 'reg-password-confirm' 
+                            ? document.getElementById('reg-password') 
+                            : document.getElementById('pet-password');
+                        
+                        if (passwordField && this.value !== passwordField.value) {
+                            this.classList.add('is-invalid');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
